@@ -1,0 +1,27 @@
+{
+  "name": "validate-nosuck",
+  "version": "1.0.0",
+  "description": "An async-friendly nodejs object validation library which doesn't suck",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "mocha --require coffeescript/register tests/*.coffee"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jhiver/validate-nosuck.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jhiver/validate-nosuck/issues"
+  },
+  "homepage": "https://github.com/jhiver/validate-nosuck#readme",
+  "dependencies": {
+    "email-validator": "^2.0.4",
+    "npm": "^6.4.1",
+    "npm-ls": "^1.0.0"
+  },
+  "devDependencies": {
+    "coffeescript": "^2.3.2"
+  }
+}
