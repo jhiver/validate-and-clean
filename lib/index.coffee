@@ -77,7 +77,10 @@ CHECKS =
 
   maxVal: (val) ->
     (att, obj, args...) ->
-      if Number(obj[att]) <= parameter then return Promise.resolve 'next'
+      if obj[att] is null or obj[att] is undefined
+        return Promise.resolve 'maxVal'
+      if String(Number(obj[att])) is 'NaN' then return Promise.resolve 'maxVal'
+      if Number(obj[att]) <= val then return Promise.resolve 'next'
       return Promise.resolve 'maxVal'
 
   minLen: (len) ->
@@ -89,7 +92,10 @@ CHECKS =
 
   minVal: (val) ->
     (att, obj, args...) ->
-      if Number(obj[att]) >= parameter then return Promise.resolve 'next'
+      if obj[att] is null or obj[att] is undefined
+        return Promise.resolve 'minVal'
+      if String(Number(obj[att])) is 'NaN' then return Promise.resolve 'minVal'
+      if Number(obj[att]) >= val then return Promise.resolve 'next'
       return Promise.resolve 'minVal'
 
   number: ->
