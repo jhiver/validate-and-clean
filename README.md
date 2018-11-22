@@ -42,6 +42,7 @@ You'd then validate your object like so:
 Up until then, you're probably saying to yourself. Meh. Yet another validation
 library that I will waste my time on.
 
+
 # but wait, you can write your own checks!
 
 Say we want to write a piece of code that capitalises an attribute:
@@ -49,19 +50,21 @@ Say we want to write a piece of code that capitalises an attribute:
     nosuck = require './lib/index'
     nosuck.register 'allcaps', ->
       (attribute, object) ->
-        if object[attribute] is null or object[attribute] is undefined then return Promise.resolve(nosuck.FAIL)
-        object[attribute] = String(object[attribute]).toUpperCase()
-        return Promise.resolve(nosuck.PASS)
+        if object[attribute] is null or object[attribute] is undefined
+          return Promise.resolve(nosuck.FAIL)
+        else
+          object[attribute] = String(object[attribute]).toUpperCase()
+          return Promise.resolve(nosuck.PASS)
 
 A few important things to note here.
 
 * Your check can alter the model / object which you validate!
-* If your check resolves `undefined`, the check will pass and go to the next check in the chain
-* If your check resolves `null`, the check will pass unconditionnally (stop the chain for this attribute)
+* If your check resolves nosuck.PASS, the check will pass and go to the next check in the chain
+* If your check resolves nosuck.GOOD, the check will pass unconditionnally (stop the chain for this attribute)
 * If your check resolves anything else, it will be considered an error
 * It's using Promises so we can transparently do some cool async stuff (keep reading...)
 
-Our schema becomes:
+Our schema then becomes:
 
     schema =
       name: check().string().minLen(3).maxLen(50)
@@ -93,3 +96,103 @@ And then our schema becomes:
       surname: check().string().minLen(3).maxLen(50)
       age: check().optional().number()
 
+
+# but wait, you can check for list of things!
+
+Say we have a list of interests with a person:
+
+    person =
+      id: 12
+      name: "John"
+      surname: "Doe"
+      age: 23
+      likes: [ 'kiwis', 'bananas', 'beer' ]
+
+
+And say we have written a 'isValidIngredient' check as above. You could do:
+
+    schema =
+      name: check().string().minLen(3).maxLen(50)
+      surname: check().string().minLen(3).maxLen(50)
+      age: check().optional().number()
+      likes: check().isArray().each(
+        check().isValidIngredient())
+      )
+
+
+# but wait, you can also have sub-schemas!
+
+    person =
+      id: 12
+      name: "John"
+      surname: "Doe"
+      age: 23
+      likes: [ 'kiwis', 'bananas', 'beer' ]
+      details:
+        limbs: 4
+        eyes: 2
+        noses: 1
+
+    schema =
+      name: check().string().minLen(3).maxLen(50)
+      surname: check().string().minLen(3).maxLen(50)
+      age: check().optional().number()
+      likes: check().isArray().each(
+        check().isValidIngredient())
+      )
+      details: check().schema(
+        limbs: check().integer().minVal(0).maxVal(4)
+        eyes: check().integer().minVal(0).maxVal(2)
+        noses: check().integer().minVal(0).maxVal(1)
+      )
+
+
+# but wait, OF course your lists can also be sub-schemas!
+
+    personSchema =
+      name: check().string().minLen(3).maxLen(50)
+      surname: check().string().minLen(3).maxLen(50)
+      age: check().optional().number()
+      likes: check().isArray().each(
+        check().isValidIngredient())
+      )
+      details: check().schema(
+        limbs: check().integer().minVal(0).maxVal(4)
+        eyes: check().integer().minVal(0).maxVal(2)
+        noses: check().integer().minVal(0).maxVal(1)
+      )
+
+    # not tested this last one, but almost sure it probably works :)
+    # friends are persons too so we should be able to subreference the schema
+    # with itself.
+    personSchema.friends = check().optional().isArray().each(check().schema(personSchema))
+
+
+# but wait, when it doesn't validate, the output actually looks pretty neat!
+
+Say we have
+
+    person =
+      id: 12
+      name: "John"
+      surname: "Doe"
+      age: -1
+      likes: [ 'kiwis', 'bananas', 'arsenic' ]
+      details:
+        limbs: 5
+        eyes: 2
+        noses: 1
+
+After validation, object could look like:
+
+    {
+      "age": "minVal",
+      "likes": [
+        null,
+        null,
+        "badForYou"
+      ],
+      "details": {
+        "limbs": "maxVal"
+      }
+    }
