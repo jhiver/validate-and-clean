@@ -1,6 +1,6 @@
 { check, validate } = require '../lib/index'
 
-describe 'equals', ->
+describe 'notEquals', ->
 
   it 'should not compare undefined = undefined', (done) ->
     schema = title: check().notEquals(undefined)

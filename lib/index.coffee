@@ -100,7 +100,10 @@ CHECKS =
 
   number: ->
     (att, obj, args...) ->
+      if obj[att] is null or obj[att] is undefined
+        return Promise.resolve 'number'
       if String(Number(String(obj[att]))) is 'NaN' then return Promise.resolve('number')
+      obj[att] = Number obj[att]
       return Promise.resolve 'next'
 
   optional: ->
@@ -125,7 +128,9 @@ CHECKS =
 
   string: ->
     (att, obj, args...) ->
-      if obj[att] == null then obj[att] = ''
+      if obj[att] is null or obj[att] is undefined
+        return Promise.resolve 'string'
+      obj[att] = String obj[att]
       return Promise.resolve 'next'
 
   trim: ->
