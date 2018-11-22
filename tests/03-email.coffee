@@ -11,6 +11,7 @@ describe 'email', ->
         unless errors then return done('errors should not be null')
         if errors['email'] is 'email' then return done()
         return done("unexpected errors object #{JSON.stringify(errors)}")
+    return null
 
   it 'should fail when undefined', (done) ->
     object = email: {}
@@ -20,6 +21,7 @@ describe 'email', ->
         unless errors then return done('errors should not be null')
         if errors['email'] is 'email' then return done()
         return done("unexpected errors object #{JSON.stringify(errors)}")
+    return null
 
   it 'should fail when 0', (done) ->
     object = email: 0
@@ -29,6 +31,7 @@ describe 'email', ->
         unless errors then return done('errors should not be null')
         if errors['email'] is 'email' then return done()
         return done("unexpected errors object #{JSON.stringify(errors)}")
+    return null
 
   it 'should fail when random garbage', (done) ->
     object = email: "sdfsdfsdfsd"
@@ -38,6 +41,7 @@ describe 'email', ->
         unless errors then return done('errors should not be null')
         if errors['email'] is 'email' then return done()
         return done("unexpected errors object #{JSON.stringify(errors)}")
+    return null
 
   it 'should pass when looks like an email', (done) ->
     object = email: 'example@example.blue'
@@ -46,3 +50,4 @@ describe 'email', ->
       .then (errors) ->
         if errors then return done("should not have errors")
         return done()
+    return null

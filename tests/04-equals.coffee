@@ -10,6 +10,7 @@ describe 'equals', ->
       .then (errors) ->
         if errors then return done "should not have errors"
         return done()
+    return null
 
   it 'should compare null != undefined', (done) ->
     schema = title: check().equals(undefined)
@@ -19,6 +20,7 @@ describe 'equals', ->
       .then (errors) ->
         if errors then return done()
         return done("should have errors")
+    return null
 
   it 'should compare foo = foo', (done) ->
     schema = title: check().equals('foo')
@@ -28,6 +30,7 @@ describe 'equals', ->
       .then (errors) ->
         if errors then return done "should not have errors"
         return done()
+    return null
 
   it 'should compare foo != bar', (done) ->
     schema = title: check().equals('foo')
@@ -37,3 +40,4 @@ describe 'equals', ->
       .then (errors) ->
         if errors then return done()
         return done("should have errors")
+    return null

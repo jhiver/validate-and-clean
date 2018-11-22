@@ -11,6 +11,7 @@ describe 'default', ->
         if errors then return done('errors should be null')
         if object.title is 'test' then return done()
         return done("object.title isnt test")
+    return null
 
   it 'should assign when undefined', (done) ->
     object = {}
@@ -20,6 +21,7 @@ describe 'default', ->
         if errors then return done('errors should be null')
         if object.title is 'test' then return done()
         return done("object.title isnt test")
+    return null
 
   it 'should not assign when 0', (done) ->
     object = { title: 0 }
@@ -29,3 +31,4 @@ describe 'default', ->
         if errors then return done('errors should be null')
         if object.title is 0 then return done()
         return done("object.title isnt 0")
+    return null
