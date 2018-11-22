@@ -25,8 +25,17 @@ CHECKS =
       else
         return Promise.resolve 'equals'
 
+  notEquals: (val) ->
+    (att, obj, args...) ->
+      if obj[att] isnt val
+        return Promise.resolve 'next'
+      else
+        return Promise.resolve 'notEquals'
+
   hasDigit: ->
     (att, obj, args...) ->
+      if obj[att] is null or obj[att] is undefined
+        return Promise.resolve 'hasDigit'
       if obj[att].match /[0-9]/
         return Promise.resolve 'next'
       else
@@ -34,6 +43,8 @@ CHECKS =
 
   hasLowerCase: ->
     (att, obj, args...) ->
+      if obj[att] is null or obj[att] is undefined
+        return Promise.resolve 'hasLowerCase'
       if obj[att].match /[a-z]/
         return Promise.resolve 'next'
       else
@@ -41,6 +52,8 @@ CHECKS =
 
   hasSpecial: ->
     (att, obj, args...) ->
+      if obj[att] is null or obj[att] is undefined
+        return Promise.resolve 'hasSpecial'
       if obj[att].match /[^A-Za-z0-9]/
         return Promise.resolve 'next'
       else
@@ -48,6 +61,8 @@ CHECKS =
 
   hasUpperCase: ->
     (att, obj, args...) ->
+      if obj[att] is null or obj[att] is undefined
+        return Promise.resolve 'hasUpperCase'
       if obj[att].match /[A-Z]/
         return Promise.resolve 'next'
       else
@@ -55,7 +70,8 @@ CHECKS =
 
   maxLen: (len) ->
     (att, obj, args...) ->
-      if obj[att].length == null then return Promise.resolve 'maxLen'
+      if obj[att] is null or obj[att] is undefined
+        return Promise.resolve 'maxLen'
       if obj[att].length <= len then return Promise.resolve 'next'
       return Promise.resolve 'maxLen'
 
@@ -66,7 +82,8 @@ CHECKS =
 
   minLen: (len) ->
     (att, obj, args...) ->
-      if obj[att].length == null then return Promise.resolve 'minLen'
+      if obj[att] is null or obj[att] is undefined
+        return Promise.resolve 'minLen'
       if obj[att].length >= len then return Promise.resolve 'next'
       return Promise.resolve 'minLen'
 
