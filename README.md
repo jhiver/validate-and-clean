@@ -151,7 +151,7 @@ And say we have written a 'isValidIngredient' check. You could do:
       name: vac().string().minLen(3).maxLen(50)
       surname: vac().string().minLen(3).maxLen(50)
       age: vac().optional().number()
-      likes: vac().isArray().each(
+      likes: vac().array().each(
         vac().isValidIngredient())
       )
 
@@ -191,7 +191,7 @@ are not supported)
     person_schema =
       name: vac().string().trim().minLen(3).maxLen(50)
 
-    person_schema.friends = vac().optional().isArray().each(
+    person_schema.friends = vac().optional().array().each(
       vac().schema(person_schema)
     )
 
