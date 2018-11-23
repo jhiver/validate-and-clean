@@ -5,7 +5,7 @@ validate-and-clean is a library which validates and sanitizes your JSON inputs.
 
 # sorry...
 
-The samples below are written in coffeescript, cause it's what I like to write.
+The samples below are written in coffeescript, because it's what I like to write.
 You don't need coffeescript to use this module though.
 
 
