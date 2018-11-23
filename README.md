@@ -65,7 +65,7 @@ And you'd get the following output:
 | hasUpperCase    | checks if contains at least one uppercase letter          |
 | integer         | checks if is an integer value                             |
 | like(regexp)    | checks if matches regexp                                  |
-| unlike(regexp)  | checks unless matches regexp                              |
+| notLike(regexp) | checks unless matches regexp                              |
 | maxLen(val)     | checks if has at most `val` elements                      |
 | maxVal(val)     | checks if value is at most `val`                          |
 | minLen(val)     | checks if has at least `val` elements                     |
