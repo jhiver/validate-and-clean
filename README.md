@@ -88,7 +88,7 @@ Is there an obvious one I missed? Let me know or better, do a pull request!
 # add your own checks
 
 Say an object has a user_id attribute, and you want to make sure it exists
-replace the attribute with a `user` object:
+but also to replace the attribute with a `user` object:
 
     vac.register 'user', ->
       (attribute, object) ->
