@@ -98,7 +98,14 @@ replace the attribute with a `user` object:
         return new Promise (resolve, reject) ->
           storage.getUserById id, (error, user) ->
             if error then return reject(error)
-            unless user then return resolve('user') # throw error
+
+            # the validation fails, so we resolve to an error.
+            # YES I SAID RESOLVE.
+
+            # reject() is reserved for 'real' big, bad errors
+            # (database unreachable, I/O errors, etc) not the
+            # normal validation process return values.
+            unless user then return resolve('user')
 
             # it worked!
             delete object[attribute]
@@ -167,7 +174,35 @@ against a new schema also.
 
 # Lists can also contain schemas...
 
-which can even reference themselves!
+which can even reference themselves (but self referencing structures
+are not supported)
+
+    person1 =
+      name: " John"
+
+    person2 =
+      name: "Mary  "
+
+    person3 =
+      name: "Mo"
+
+    person1.friends = [ person2, person3 ]
+
+    person_schema =
+      name: vac().string().trim().minLen(3).maxLen(50)
+
+    person_schema.friends = vac().optional().isArray().each(
+      vac().schema(person_schema)
+    )
+
+    vac.validate(person1).with(person_schema)
+      .then (errors) ->
+        if(errors)
+          console.log "validation errors", JSON.stringify errors, null, 2
+        else
+          console.log "there were no errors"
+
+        console.log "person is now", person1
 
     personSchema =
       name: vac().string().minLen(3).maxLen(50)
@@ -177,6 +212,22 @@ which can even reference themselves!
     personSchema.friends = vac().optional().isArray().each(
       vac().schema(personSchema)
     )
+
+Outputs:
+
+    validation errors {
+      "friends": [
+        null,
+        {
+          "name": "minLen"
+        }
+      ]
+    }
+
+    person is now { name: 'John',
+      friends:
+       [ { name: 'Mary', friends: null },
+         { name: 'Mo', friends: null } ] }
 
 
 # Error output format for lists & nested objects
