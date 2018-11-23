@@ -13,7 +13,7 @@ describe 'nested array objects', ->
       ]
 
     schema =
-      persons: check().isArray().each(
+      persons: check().array().each(
         name: check().string()
         surname: check().string()
         age: check().number().minVal(10)

@@ -81,6 +81,24 @@ CHECKS =
       else
         return Promise.resolve 'integer'
 
+  like: (re) ->
+    (att, obj, args...) ->
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
+      if String(obj[att]).match(re)
+        return Promise.resolve undefined
+      else
+        return Promise.resolve 'like'
+
+  notLike: (re) ->
+    (att, obj, args...) ->
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
+      if String(obj[att]).match(re)
+        return Promise.resolve 'notLike'
+      else
+        return Promise.resolve undefined
+
   maxLen: (len) ->
     (att, obj, args...) ->
       if obj[att] is null then return Promise.resolve 'required'
@@ -169,12 +187,12 @@ CHECKS =
       if String(obj[att]).match /........-....-....-....-............/ then return Promise.resolve undefined
       return Promise.resolve 'uuid'
 
-  isArray: ->
+  array: ->
     (att, obj, args...) ->
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
       if _.isArray(obj[att]) then return Promise.resolve(undefined)
-      return Promise.resolve('isArray')
+      return Promise.resolve('array')
 
 
   schema: (schema) ->

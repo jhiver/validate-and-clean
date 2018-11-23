@@ -4,7 +4,7 @@ describe 'numbers list', ->
 
   it 'should check numbers', (done) ->
     object = numbers: [12, 22, 7, 36]
-    schema = numbers: check().isArray().each(
+    schema = numbers: check().array().each(
       check().number()
     )
     validate(object)
@@ -16,7 +16,7 @@ describe 'numbers list', ->
 
   it 'should fail not numbers', (done) ->
     object = numbers: [12, "foo", 7, "36", null]
-    schema = numbers: check().isArray().each(
+    schema = numbers: check().array().each(
       check().number()
     )
     validate(object)

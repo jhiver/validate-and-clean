@@ -78,7 +78,7 @@ And you'd get the following output:
 | string          | casts the value into a string                             |
 | trim            | trims a string                                            |
 | uuid            | checks if looks like an uuid                              |
-| isArray         | checks if it's an array                                   |
+| array           | checks if it's an array                                   |
 | schema          | these two are used for nested structures...               |
 | each            | see examples below!                                       |
 
