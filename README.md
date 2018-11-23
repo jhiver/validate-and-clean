@@ -44,11 +44,6 @@ Then you would validate and sanitize your object like so
         console.log "person has been sanitized to:"
         console.log person
 
-    schema =
-      name: vac().string().minLen(3).maxLen(50)
-      surname: vac().string().minLen(3).maxLen(50)
-      age: vac().optional().number()
-
 
 And you'd get the following output:
 
