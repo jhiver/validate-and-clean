@@ -3,13 +3,13 @@
 validate-and-clean is a library which validates and sanitizes your JSON inputs.
 
 
-# sorry...
+# Sorry... :-)
 
 The samples below are written in coffeescript, because it's what I like to write.
 You don't need coffeescript to use this module though.
 
 
-# the simple stuff
+# The simple stuff
 
 
 first say you have a structure like this:
@@ -51,7 +51,7 @@ And you'd get the following output:
     person is now: { name: 'John', surname: 'Doe', age: 17 }
 
 
-# built in validators / sanitizers
+# Built in validators / sanitizers
 
 | check name      | description                                               |
 |-----------------|-----------------------------------------------------------|
@@ -85,7 +85,7 @@ And you'd get the following output:
 Is there an obvious one I missed? Let me know or better, do a pull request!
 (on the index.coffee file please)
 
-# add your own checks
+# Add your own checks
 
 Say an object has a user_id attribute, and you want to make sure it exists
 but also to replace the attribute with a `user` object:
@@ -117,7 +117,7 @@ You can now use this in your schema:
     schema.user_id = vac().user()
 
 
-# things to remember
+# Things to remember
 
 * Your check can alter the model / object which you validate!
   You should make a deep copy of your object if / when needed
