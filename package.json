@@ -1,10 +1,10 @@
 {
   "name": "validate-and-clean",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "An async-friendly nodejs object validation library which doesn't suck",
   "main": "lib/index.js",
   "scripts": {
-    "prepublish": "coffee -o lib -c lib/*.coffee"
+    "prepublish": "coffee -o lib -c lib/*.coffee",
     "test": "mocha --require coffeescript/register tests/*.coffee"
   },
   "repository": {
