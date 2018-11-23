@@ -26,7 +26,7 @@ You'd write a schema as follows:
     vac = require 'validate-and-clean'
 
     person_schema =
-      _: vac().filter("name surname age".split(' '))
+      _: vac().filter("name", "surname", "age")
       name: vac().string().trim().minLen(3).maxLen(50)
       surname: vac().string().trim().minLen(3).maxLen(50)
       age: vac().optional().number().minVal(18)
