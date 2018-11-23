@@ -28,8 +28,8 @@ You'd write a schema as follows:
     person_schema =
       _: vac().filter("name surname age".split(' '))
       name: vac().string().trim().minLen(3).maxLen(50)
-     surname: vac().string().trim().minLen(3).maxLen(50)
-     age: vac().optional().number().minVal(18)
+      surname: vac().string().trim().minLen(3).maxLen(50)
+      age: vac().optional().number().minVal(18)
 
 
 Then you would validate and sanitize your object like so
