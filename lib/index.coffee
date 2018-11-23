@@ -14,9 +14,10 @@ CHECKS =
 
   email: ->
     (att, obj, args...) ->
-      if obj[att] is null or obj[att] is undefined then return Promise.resolve 'email'
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
       if email.validate String(obj[att])
-        return Promise.resolve undefined
+        return Promise.resolve()
       else
         return Promise.resolve 'email'
 
@@ -36,8 +37,8 @@ CHECKS =
 
   hasDigit: ->
     (att, obj, args...) ->
-      if obj[att] is null or obj[att] is undefined
-        return Promise.resolve 'hasDigit'
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
       if obj[att].match /[0-9]/
         return Promise.resolve undefined
       else
@@ -45,8 +46,8 @@ CHECKS =
 
   hasLowerCase: ->
     (att, obj, args...) ->
-      if obj[att] is null or obj[att] is undefined
-        return Promise.resolve 'hasLowerCase'
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
       if obj[att].match /[a-z]/
         return Promise.resolve undefined
       else
@@ -54,8 +55,8 @@ CHECKS =
 
   hasSpecial: ->
     (att, obj, args...) ->
-      if obj[att] is null or obj[att] is undefined
-        return Promise.resolve 'hasSpecial'
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
       if obj[att].match /[^A-Za-z0-9]/
         return Promise.resolve undefined
       else
@@ -63,47 +64,57 @@ CHECKS =
 
   hasUpperCase: ->
     (att, obj, args...) ->
-      if obj[att] is null or obj[att] is undefined
-        return Promise.resolve 'hasUpperCase'
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
       if obj[att].match /[A-Z]/
         return Promise.resolve undefined
       else
         return Promise.resolve 'hasUpperCase'
 
+  integer: ->
+    (att, obj, args...) ->
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
+      if String(Number(String(obj[att]))) is 'NaN' then return Promise.resolve('integer')
+      if Math.floor(Number(obj[att])) is Number(obj[att])
+        return Promise.resolve undefined
+      else
+        return Promise.resolve 'integer'
+
   maxLen: (len) ->
     (att, obj, args...) ->
-      if obj[att] is null or obj[att] is undefined
-        return Promise.resolve 'maxLen'
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
       if obj[att].length <= len then return Promise.resolve undefined
       return Promise.resolve 'maxLen'
 
   maxVal: (val) ->
     (att, obj, args...) ->
-      if obj[att] is null or obj[att] is undefined
-        return Promise.resolve 'maxVal'
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
       if String(Number(obj[att])) is 'NaN' then return Promise.resolve 'maxVal'
       if Number(obj[att]) <= val then return Promise.resolve undefined
       return Promise.resolve 'maxVal'
 
   minLen: (len) ->
     (att, obj, args...) ->
-      if obj[att] is null or obj[att] is undefined
-        return Promise.resolve 'minLen'
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
       if obj[att].length >= len then return Promise.resolve undefined
       return Promise.resolve 'minLen'
 
   minVal: (val) ->
     (att, obj, args...) ->
-      if obj[att] is null or obj[att] is undefined
-        return Promise.resolve 'minVal'
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
       if String(Number(obj[att])) is 'NaN' then return Promise.resolve 'minVal'
       if Number(obj[att]) >= val then return Promise.resolve undefined
       return Promise.resolve 'minVal'
 
   number: ->
     (att, obj, args...) ->
-      if obj[att] is null or obj[att] is undefined
-        return Promise.resolve 'number'
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
       if String(Number(String(obj[att]))) is 'NaN' then return Promise.resolve('number')
       obj[att] = Number obj[att]
       return Promise.resolve undefined
@@ -116,46 +127,58 @@ CHECKS =
       else
         return Promise.resolve undefined
 
-  required: ->
-    (att, obj, args...) ->
-      if obj[att] is null or obj[att] is undefined
-        return Promise.resolve 'required'
-      else
-        return Promise.resolve undefined
-
   overwrite: (val) ->
     (att, obj, args...) ->
       obj[att] = val
       return Promise.resolve undefined
 
+  pick: (attributes...) ->
+    (att, obj, args...) ->
+      _.pick obj, attributes...
+      return Promise.resolve undefined
+
+  round: (decimals) ->
+    (att, obj, args...) ->
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
+      if String(Number(String(obj[att]))) is 'NaN' then return Promise.resolve('integer')
+      decimals or= 0
+      obj[att] = Number(Math.round(obj[att]+'e'+decimals)+'e-'+decimals);
+      return Promise.resolve undefined
+
   string: ->
     (att, obj, args...) ->
-      if obj[att] is null or obj[att] is undefined then return Promise.resolve('string')
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
       obj[att] = String obj[att]
       return Promise.resolve undefined
 
   trim: ->
     (att, obj, args...) ->
-      if obj[att] is null or obj[att] is undefined then return Promise.resolve('trim')
-      if obj[att] == null then obj[att] = ''
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
+      obj[att] = String(obj[att]).replace(/^\s+/, '').replace(/\s+$/, '')
       return Promise.resolve undefined
 
   uuid: ->
     (att, obj, args...) ->
-      if obj[att] is null or obj[att] is undefined then return Promise.resolve('uuid')
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
       if String(obj[att]).match /........-....-....-....-............/ then return Promise.resolve undefined
       return Promise.resolve 'uuid'
 
   isArray: ->
     (att, obj, args...) ->
-      if obj[att] is null or obj[att] is undefined then return Promise.resolve('isArray')
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
       if _.isArray(obj[att]) then return Promise.resolve(undefined)
       return Promise.resolve('isArray')
 
 
   schema: (schema) ->
     (att, obj, args...) ->
-      if obj[att] is null or obj[att] is undefined then return Promise.resolve('schema')
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
       unless _.isObject obj[att] then return Promise.resolve('schema')
 
       model = obj[att]
@@ -168,7 +191,8 @@ CHECKS =
 
   each: (check) ->
     (att, obj, args...) ->
-      if obj[att] is null or obj[att] is undefined then return Promise.resolve('each')
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
       unless _.isObject obj[att] then return Promise.resolve('each')
       if _.size(obj[att]) is 0 then return Promise.resolve(undefined)
 
@@ -240,11 +264,10 @@ validate = (model, constraints, errors) ->
         return validate(model, constraints, errors).then(resolve)
 
 
+module.exports = CreateCheck
 module.exports.check    = CreateCheck
 module.exports.register = (checkname, check) -> CHECKS[checkname] = check
 module.exports.validate = (model) ->
   with: (schema) ->
     unless schema[IS_CHECK] then schema = CreateCheck().schema(schema)
     schema.run '_', '_': model
-
-module.exports.CHECKS = CHECKS

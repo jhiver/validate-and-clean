@@ -1,6 +1,6 @@
 { check, validate } = require '../lib/index'
 
-describe 'objects list', ->
+describe 'nested array objects', ->
 
   it 'should check lots of stuff', (done) ->
 
@@ -13,10 +13,10 @@ describe 'objects list', ->
       ]
 
     schema =
-      persons: check().required().isArray().each(
-        name: check().required().string()
-        surname: check().required().string()
-        age: check().required().number().minVal(10)
+      persons: check().isArray().each(
+        name: check().string()
+        surname: check().string()
+        age: check().number().minVal(10)
       )
 
     validate(object)

@@ -9,17 +9,17 @@ describe 'email', ->
       .with(schema)
       .then (errors) ->
         unless errors then return done('errors should not be null')
-        if errors['email'] is 'email' then return done()
+        if errors['email'] is 'required' then return done()
         return done("unexpected errors object #{JSON.stringify(errors)}")
     return null
 
   it 'should fail when undefined', (done) ->
-    object = email: {}
+    object = {}
     validate(object)
       .with(schema)
       .then (errors) ->
         unless errors then return done('errors should not be null')
-        if errors['email'] is 'email' then return done()
+        if errors['email'] is 'required' then return done()
         return done("unexpected errors object #{JSON.stringify(errors)}")
     return null
 

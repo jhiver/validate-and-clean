@@ -34,7 +34,7 @@ describe 'optional', ->
 
 
   it 'should still pass undefined', (done) ->
-    schema = title: check().optional().required()
+    schema = title: check().optional()
     object = title: undefined
     validate(object)
       .with(schema)
@@ -44,7 +44,7 @@ describe 'optional', ->
     return null
 
   it 'should still pass null', (done) ->
-    schema = title: check().optional().required()
+    schema = title: check().optional()
     object = title: null
     validate(object)
       .with(schema)
@@ -54,7 +54,7 @@ describe 'optional', ->
     return null
 
   it 'should still pass random garbage', (done) ->
-    schema = title: check().optional().required()
+    schema = title: check().optional()
     object = title: 'dfgsdfjklgb'
     validate(object)
       .with(schema)

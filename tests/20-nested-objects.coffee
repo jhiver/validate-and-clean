@@ -12,9 +12,9 @@ describe 'nested object', ->
 
     schema =
       person: check().optional().schema(
-        identity: check().required().schema(
-          name: check().required().string()
-          surname: check().required().string()
+        identity: check().schema(
+          name: check().string()
+          surname: check().string()
         )
       )
 
