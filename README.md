@@ -14,8 +14,8 @@ You don't need coffeescript to use this module though.
 first say you have a structure like this:
 
     person =
-      name: "John"
-      surname: "Doe"
+      name: "  John"
+      surname: "Doe  "
       age: 17
       foobar: 'baz'
 
@@ -54,7 +54,7 @@ Then you would validate and sanitize your object like so
 And you'd get the following output:
 
     validation errors: { age: 'minVal' }
-    person is now: { name: 'John', surname: 'Doe', age: 17, foobar: 'baz' }
+    person is now: { name: 'John', surname: 'Doe', age: 17 }
 
 
 # built in validators / sanitizers

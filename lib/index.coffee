@@ -134,7 +134,9 @@ CHECKS =
 
   pick: (attributes...) ->
     (att, obj, args...) ->
-      _.pick obj, attributes...
+      allowed = {}
+      _.each attributes, (att) -> allowed[att] = true
+      _.each obj, (v, k) -> delete obj[k] unless allowed[k]
       return Promise.resolve undefined
 
   round: (decimals) ->
