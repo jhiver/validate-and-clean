@@ -204,15 +204,6 @@ are not supported)
 
         console.log "person is now", person1
 
-    personSchema =
-      name: vac().string().minLen(3).maxLen(50)
-      surname: vac().string().minLen(3).maxLen(50)
-      age: vac().optional().number()
-
-    personSchema.friends = vac().optional().isArray().each(
-      vac().schema(personSchema)
-    )
-
 Outputs:
 
     validation errors {
