@@ -1,6 +1,7 @@
-# vac
+# validate-and-clean
 
-vac is a library which validates and sanitizes your JSON inputs.
+validate-and-clean is a library which validates and sanitizes your JSON inputs.
+
 
 # sorry...
 
@@ -23,11 +24,12 @@ first say you have a structure like this:
 You'd write a schema as follows:
 
     vac = require 'validate-and-clean'
+
     person_schema =
       _: vac().filter("name surname age".split(' '))
       name: vac().string().trim().minLen(3).maxLen(50)
-      surname: vac().string().trim().minLen(3).maxLen(50)
-      age: vac().optional().number().minVal(18)
+     surname: vac().string().trim().minLen(3).maxLen(50)
+     age: vac().optional().number().minVal(18)
 
 
 Then you would validate and sanitize your object like so
@@ -42,13 +44,10 @@ Then you would validate and sanitize your object like so
         console.log "person has been sanitized to:"
         console.log person
 
-    person_schema =
-    nosuck = require 'validate-nosuck'
-    check = nosuck.check
     schema =
-      name: check().string().minLen(3).maxLen(50)
-      surname: check().string().minLen(3).maxLen(50)
-      age: check().optional().number()
+      name: vac().string().minLen(3).maxLen(50)
+      surname: vac().string().minLen(3).maxLen(50)
+      age: vac().optional().number()
 
 
 And you'd get the following output:
@@ -147,11 +146,11 @@ Say we have a list of interests with a person:
 And say we have written a 'isValidIngredient' check. You could do:
 
     schema =
-      name: check().string().minLen(3).maxLen(50)
-      surname: check().string().minLen(3).maxLen(50)
-      age: check().optional().number()
-      likes: check().isArray().each(
-        check().isValidIngredient())
+      name: vac().string().minLen(3).maxLen(50)
+      surname: vac().string().minLen(3).maxLen(50)
+      age: vac().optional().number()
+      likes: vac().isArray().each(
+        vac().isValidIngredient())
       )
 
 
@@ -161,13 +160,13 @@ We can validate attributes which have an object as a value
 against a new schema also.
 
     schema =
-      name: check().string().minLen(3).maxLen(50)
-      surname: check().string().minLen(3).maxLen(50)
-      age: check().optional().number()
-      details: check().schema(
-        limbs: check().integer().minVal(0).maxVal(4)
-        eyes: check().integer().minVal(0).maxVal(2)
-        noses: check().integer().minVal(0).maxVal(1)
+      name: vac().string().minLen(3).maxLen(50)
+      surname: vac().string().minLen(3).maxLen(50)
+      age: vac().optional().number()
+      details: vac().schema(
+        limbs: vac().integer().minVal(0).maxVal(4)
+        eyes: vac().integer().minVal(0).maxVal(2)
+        noses: vac().integer().minVal(0).maxVal(1)
       )
 
 
@@ -176,12 +175,12 @@ against a new schema also.
 which can even reference themselves!
 
     personSchema =
-      name: check().string().minLen(3).maxLen(50)
-      surname: check().string().minLen(3).maxLen(50)
-      age: check().optional().number()
+      name: vac().string().minLen(3).maxLen(50)
+      surname: vac().string().minLen(3).maxLen(50)
+      age: vac().optional().number()
 
-    personSchema.friends = check().optional().isArray().each(
-      check().schema(personSchema)
+    personSchema.friends = vac().optional().isArray().each(
+      vac().schema(personSchema)
     )
 
 
