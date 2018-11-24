@@ -4,7 +4,7 @@
   "description": "An async-friendly nodejs object validation library which doesn't suck",
   "main": "lib/index.js",
   "scripts": {
-    "prepublish": "coffee -o lib -c lib/*.coffee"
+    "prepublish": "coffee -o lib -c lib/*.coffee",
     "test": "mocha --require coffeescript/register tests/*.coffee"
   },
   "repository": {
