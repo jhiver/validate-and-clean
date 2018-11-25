@@ -1,46 +1,149 @@
-_     = require 'lodash'
-email = require 'email-validator'
-uuid  = require 'uuid'
+_        = require 'lodash'
+
+uuid = ->
+  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace /[xy]/g, (c) ->
+    r = Math.random() * 16 | 0
+    v = if c == 'x' then r else r & 0x3 | 0x8
+    v.toString 16
+
 IS_CHECK = uuid()
+
+# taken from https://github.com/manishsaraan/email-validator/blob/master/index.js
+EMAIL_RE = /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
+
+# taken from - https://gist.github.com/dperini/729294
+RE_URL = new RegExp(
+  "^" +
+    # protocol identifier (optional)
+    # short syntax # still required
+    "(?:(?:(?:https?|ftp):)?\\/\\/)" +
+    # user:pass BasicAuth (optional)
+    "(?:\\S+(?::\\S*)?@)?" +
+    "(?:" +
+      # IP address dotted notation octets
+      # excludes loopback network 0.0.0.0
+      # excludes reserved space >= 224.0.0.0
+      # excludes network & broacast addresses
+      # (first & last IP address of each class)
+      "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
+      "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
+      "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
+    "|" +
+      # host & domain names, may end with dot
+      # can be replaced by a shortest alternative
+      # (?![-_])(?:[-\\w\\u00a1-\\uffff]{0,63}[^-_]\\.)+
+      "(?:" +
+        "(?:" +
+          "[a-z0-9\\u00a1-\\uffff]" +
+          "[a-z0-9\\u00a1-\\uffff_-]{0,62}" +
+        ")?" +
+        "[a-z0-9\\u00a1-\\uffff]\\." +
+      ")+" +
+      # TLD identifier name, may end with dot
+      "(?:[a-z\\u00a1-\\uffff]{2,}\\.?)" +
+    ")" +
+    # port number (optional)
+    "(?::\\d{2,5})?" +
+    # resource path (optional)
+    "(?:[/?#]\\S*)?" +
+  "$", "i"
+);
 
 
 CHECKS =
+
+  sip: ->
+    (att, obj, args...) ->
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
+      if String(obj[att]).match(/^\+?(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))(:\d+)?$/)
+        return Promise.resolve()
+      else
+        return Promise.resolve('sip')
+
+  url: ->
+    (att, obj, args...) ->
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
+      if String(obj[att]).match(RE_URL)
+        return Promise.resolve()
+      else
+        return Promise.resolve('url')
+
+  phone: ->
+    (att, obj, args...) ->
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
+      if String(obj[att]).match /^\+?\d{4,15}$/ then return Promise.resolve()
+      return Promise.resolve('phone')
+
+  enum: (values...) ->
+    (att, obj, args...) ->
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
+      for allowed in values
+        if obj[att] is allowed then return Promise.resolve()
+      return Promise.resolve('enum')
+
+  filter: (attributes...) ->
+    (att, obj, args...) ->
+      allowed = {}
+      _.each attributes, (k) -> allowed[k] = true
+      _.each obj, (v, k) -> delete obj[k] unless allowed[k]
+      return Promise.resolve()
+
+  boolean: ->
+    (att, obj, args...) ->
+      obj[att] = Boolean obj[att]
+      return Promise.resolve()
 
   default: (val) ->
     (att, obj, args...) ->
       if obj[att] is null or obj[att] is undefined
         obj[att] = val
-      return Promise.resolve undefined
+      return Promise.resolve()
 
   email: ->
     (att, obj, args...) ->
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
-      if email.validate String(obj[att])
-        return Promise.resolve()
-      else
-        return Promise.resolve 'email'
+
+      email = String obj[att]
+      if email.length > 254 then return Promise.resolve('email')
+      unless EMAIL_RE.test(email) then return Promise.resolve('email')
+
+      parts = email.split("@")
+      if(parts[0].length>64) then return Promise.resolve('email')
+
+      domainParts = parts[1].split(".");
+      if domainParts.some (part) -> part.length>63
+        return Promise.resolve('email')
+
+      return Promise.resolve()
+
 
   equals: (val) ->
     (att, obj, args...) ->
       if obj[att] is val
-        return Promise.resolve undefined
+        return Promise.resolve()
       else
         return Promise.resolve 'equals'
+
 
   notEquals: (val) ->
     (att, obj, args...) ->
       if obj[att] isnt val
-        return Promise.resolve undefined
+        return Promise.resolve()
       else
         return Promise.resolve 'notEquals'
+
 
   hasDigit: ->
     (att, obj, args...) ->
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
       if obj[att].match /[0-9]/
-        return Promise.resolve undefined
+        return Promise.resolve()
       else
         return Promise.resolve 'hasDigit'
 
@@ -49,7 +152,7 @@ CHECKS =
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
       if obj[att].match /[a-z]/
-        return Promise.resolve undefined
+        return Promise.resolve()
       else
         return Promise.resolve 'hasLowerCase'
 
@@ -58,7 +161,7 @@ CHECKS =
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
       if obj[att].match /[^A-Za-z0-9]/
-        return Promise.resolve undefined
+        return Promise.resolve()
       else
         return Promise.resolve 'hasSpecial'
 
@@ -67,7 +170,7 @@ CHECKS =
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
       if obj[att].match /[A-Z]/
-        return Promise.resolve undefined
+        return Promise.resolve()
       else
         return Promise.resolve 'hasUpperCase'
 
@@ -77,7 +180,7 @@ CHECKS =
       if obj[att] is undefined then return Promise.resolve 'required'
       if String(Number(String(obj[att]))) is 'NaN' then return Promise.resolve('integer')
       if Math.floor(Number(obj[att])) is Number(obj[att])
-        return Promise.resolve undefined
+        return Promise.resolve()
       else
         return Promise.resolve 'integer'
 
@@ -86,7 +189,7 @@ CHECKS =
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
       if String(obj[att]).match(re)
-        return Promise.resolve undefined
+        return Promise.resolve()
       else
         return Promise.resolve 'like'
 
@@ -97,13 +200,13 @@ CHECKS =
       if String(obj[att]).match(re)
         return Promise.resolve 'notLike'
       else
-        return Promise.resolve undefined
+        return Promise.resolve()
 
   maxLen: (len) ->
     (att, obj, args...) ->
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
-      if obj[att].length <= len then return Promise.resolve undefined
+      if obj[att].length <= len then return Promise.resolve()
       return Promise.resolve 'maxLen'
 
   maxVal: (val) ->
@@ -111,14 +214,14 @@ CHECKS =
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
       if String(Number(obj[att])) is 'NaN' then return Promise.resolve 'maxVal'
-      if Number(obj[att]) <= val then return Promise.resolve undefined
+      if Number(obj[att]) <= val then return Promise.resolve()
       return Promise.resolve 'maxVal'
 
   minLen: (len) ->
     (att, obj, args...) ->
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
-      if obj[att].length >= len then return Promise.resolve undefined
+      if obj[att].length >= len then return Promise.resolve()
       return Promise.resolve 'minLen'
 
   minVal: (val) ->
@@ -126,7 +229,7 @@ CHECKS =
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
       if String(Number(obj[att])) is 'NaN' then return Promise.resolve 'minVal'
-      if Number(obj[att]) >= val then return Promise.resolve undefined
+      if Number(obj[att]) >= val then return Promise.resolve()
       return Promise.resolve 'minVal'
 
   number: ->
@@ -135,7 +238,13 @@ CHECKS =
       if obj[att] is undefined then return Promise.resolve 'required'
       if String(Number(String(obj[att]))) is 'NaN' then return Promise.resolve('number')
       obj[att] = Number obj[att]
-      return Promise.resolve undefined
+      return Promise.resolve()
+
+  required: ->
+    (att, obj, args...) ->
+      if obj[att] is null then return Promise.resolve 'required'
+      if obj[att] is undefined then return Promise.resolve 'required'
+      return Promise.resolve()
 
   optional: ->
     (att, obj, args...) ->
@@ -143,19 +252,19 @@ CHECKS =
         obj[att] = null
         return Promise.resolve null
       else
-        return Promise.resolve undefined
+        return Promise.resolve()
 
   overwrite: (val) ->
     (att, obj, args...) ->
       obj[att] = val
-      return Promise.resolve undefined
+      return Promise.resolve()
 
   pick: (attributes...) ->
     (att, obj, args...) ->
       allowed = {}
       _.each attributes, (att) -> allowed[att] = true
       _.each obj, (v, k) -> delete obj[k] unless allowed[k]
-      return Promise.resolve undefined
+      return Promise.resolve()
 
   round: (decimals) ->
     (att, obj, args...) ->
@@ -164,27 +273,27 @@ CHECKS =
       if String(Number(String(obj[att]))) is 'NaN' then return Promise.resolve('integer')
       decimals or= 0
       obj[att] = Number(Math.round(obj[att]+'e'+decimals)+'e-'+decimals);
-      return Promise.resolve undefined
+      return Promise.resolve()
 
   string: ->
     (att, obj, args...) ->
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
       obj[att] = String obj[att]
-      return Promise.resolve undefined
+      return Promise.resolve()
 
   trim: ->
     (att, obj, args...) ->
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
       obj[att] = String(obj[att]).replace(/^\s+/, '').replace(/\s+$/, '')
-      return Promise.resolve undefined
+      return Promise.resolve()
 
   uuid: ->
     (att, obj, args...) ->
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
-      if String(obj[att]).match /........-....-....-....-............/ then return Promise.resolve undefined
+      if String(obj[att]).match /........-....-....-....-............/ then return Promise.resolve()
       return Promise.resolve 'uuid'
 
   array: ->

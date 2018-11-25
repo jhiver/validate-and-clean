@@ -48,7 +48,7 @@ Then you would validate and sanitize your object like so
 And you'd get the following output:
 
     validation errors: { age: 'minVal' }
-    person is now: { name: 'John', surname: 'Doe', age: 17 }
+    person has been sanitized to: { name: 'John', surname: 'Doe', age: 17 }
 
 
 # Built in validators / sanitizers
@@ -57,8 +57,10 @@ And you'd get the following output:
 |-----------------|-----------------------------------------------------------|
 | default(val)    | sets a default value if undefined or null                 |
 | email           | checks if a valid email                                   |
+| enum(list...)   | checks if is any item in list                             |
 | equals(val)     | checks if equal to `val`                                  |
 | notEquals       | checks if not equal to `val`                              |
+| filter(list...) | removes any attribute not in list from the object         |
 | hasDigit        | checks if contains at least one digit                     |
 | hasLowerCase    | checks if contains at least one lowercase letter          |
 | hasSpecial      | checks if contains at least one special character         |
@@ -75,9 +77,11 @@ And you'd get the following output:
 | overwrite(val)  | overwrites with `val`                                     |
 | pick            | restrict an object to a certain set of attributes         |
 | round(decimals) | rounds a number to decimal places (default: 0)            |
+| sip             | does it look like a sip address                           |
 | string          | casts the value into a string                             |
 | trim            | trims a string                                            |
 | uuid            | checks if looks like an uuid                              |
+| url             | checks if looks like an URL                               |
 | array           | checks if it's an array                                   |
 | schema          | these two are used for nested structures...               |
 | each            | see examples below!                                       |
