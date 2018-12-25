@@ -206,7 +206,7 @@ CHECKS =
     (att, obj, args...) ->
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
-      if obj[att].length <= len then return Promise.resolve()
+      if obj[att].length <= Number(len) then return Promise.resolve()
       return Promise.resolve 'maxLen'
 
   maxVal: (val) ->
@@ -214,14 +214,14 @@ CHECKS =
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
       if String(Number(obj[att])) is 'NaN' then return Promise.resolve 'maxVal'
-      if Number(obj[att]) <= val then return Promise.resolve()
+      if Number(obj[att]) <= Number(val) then return Promise.resolve()
       return Promise.resolve 'maxVal'
 
   minLen: (len) ->
     (att, obj, args...) ->
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
-      if obj[att].length >= len then return Promise.resolve()
+      if obj[att].length >= Number(len) then return Promise.resolve()
       return Promise.resolve 'minLen'
 
   minVal: (val) ->
@@ -229,7 +229,7 @@ CHECKS =
       if obj[att] is null then return Promise.resolve 'required'
       if obj[att] is undefined then return Promise.resolve 'required'
       if String(Number(obj[att])) is 'NaN' then return Promise.resolve 'minVal'
-      if Number(obj[att]) >= val then return Promise.resolve()
+      if Number(obj[att]) >= Number(val) then return Promise.resolve()
       return Promise.resolve 'minVal'
 
   number: ->

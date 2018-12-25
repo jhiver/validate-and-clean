@@ -1,6 +1,6 @@
 {
   "name": "validate-and-clean",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "An async-friendly nodejs object validation library which doesn't suck",
   "main": "lib/index.js",
   "scripts": {
